@@ -2,91 +2,35 @@ package extensions.fastmap.MiniGames;
 
 import extensions.fastmap.FastMap;
 import extensions.fastmap.Map.RoomTile;
-import extensions.fastmap.MiniGames.MiniGameController;
 import gearth.extensions.parsers.HFloorItem;
 import gearth.protocol.HMessage;
 import gearth.protocol.HPacket;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 
 import javax.vecmath.Vector2d;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class HandItemGame extends MiniGameController {
 
     private HashMap<String, Integer> held;
 
+    private long last_pick_time;
+    private int found_item_hand_id;
+    private boolean next_pick;
 
-    public CheckBox rebanada;
-    public ImageView rebanada_img;
-    public CheckBox palo;
-    public ImageView palo_img;
-    public CheckBox serpiente;
-    public ImageView serpiente_img;
-    public CheckBox patito;
-    public ImageView patito_img;
-    public CheckBox alienigena;
-    public ImageView alienigena_img;
-    public CheckBox ovni;
-    public ImageView ovni_img;
-    public CheckBox comandante;
-    public ImageView comandante_img;
-    public CheckBox llave;
-    public ImageView llave_img;
-    public CheckBox te;
-    public ImageView te_img;
-    public CheckBox tostada;
-    public ImageView tostada_img;
-    public CheckBox copa_sangre;
-    public ImageView copa_sangre_img;
-    public CheckBox antorcha;
-    public ImageView antorcha_img;
-    public CheckBox naranja;
-    public ImageView naranja_img;
-    public CheckBox pera;
-    public ImageView pera_img;
-    public CheckBox sake;
-    public ImageView sake_img;
-    public CheckBox zanahoria;
-    public ImageView zanahoria_img;
-    public CheckBox melocoton;
-    public ImageView melocoton_img;
-    public CheckBox zumo_tomate;
-    public ImageView zumo_tomate_img;
-    public CheckBox globo;
-    public ImageView globo_img;
-    public CheckBox jeringuilla;
-    public ImageView jeringuilla_img;
-    public CheckBox pildoras;
-    public ImageView pildoras_img;
-    public CheckBox flor;
-    public ImageView flor_img;
-    public CheckBox pez;
-    public ImageView pez_img;
-    public CheckBox muslo;
-    public ImageView muslo_img;
+    private List<String> possible_pick_item;
 
-    public CheckBox bolsa;
-    public ImageView bolsa_img;
-    public CheckBox pincel;
-    public ImageView pincel_img;
-
-    public TextField delay;
-
-
-    long last_pick_time = 0L;
-    int item_hand_id = -1;
-    boolean next_pick = true;
-
-    List<String> pick_item = new ArrayList<>();
-
-    private final FastMap parent;
     public HandItemGame(FastMap parent) {
-        this.parent = parent;
+        super(parent);
+        // Initial Variables
+        possible_pick_item = new ArrayList<>();
+        next_pick = true;
+        found_item_hand_id = -1;
+        last_pick_time = System.currentTimeMillis();
 
+        // Held Item Id
         held = new HashMap<String, Integer>();
         held.put("Té", 1);
         held.put("Zumo", 2);
@@ -212,7 +156,6 @@ public class HandItemGame extends MiniGameController {
         held.put("Ramune Azul", 119);
         held.put("Granizado de arándanos", 120);
 
-
         held.put("Píldoras", 1013); // Agujero Negro
         held.put("Jeringuilla", 1014); // Agujero Negro
         held.put("Bolsa de Residuos Tóxicos", 1015); // Agujero Negro
@@ -232,52 +175,53 @@ public class HandItemGame extends MiniGameController {
         held.put("Palo", 1038); // Agujero Negro
         held.put("Mano Cortada", 1039);
         held.put("Corazón", 1040);
-        held.put("Pincel", 1051);
-
+        held.put("Pincel", 1051);  // Agujero Negro
 
         // Hash
-        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RoomUserHandItem", this::hand_item);
+        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RoomUserHandItem", this::HandItemPacket);
     }
 
     @Override
     public void init(){
-        if(!parent.isCurrentGame(TypeMiniGame.LISTA_COMPRA)) return;
-
-        pick_item.clear();
-        item_hand_id = -1;
+        parent.writeToConsole("INITIALIZE \"HAND ITEM\" GAME");
+        possible_pick_item.clear();
+        found_item_hand_id = -1;
         next_pick = true;
         last_pick_time = 0L;
 
-        if(rebanada.isSelected()){ pick_item.add(rebanada.getText()); }
-        if(palo.isSelected()){ pick_item.add(palo.getText()); }
-        if(serpiente.isSelected()){ pick_item.add(serpiente.getText()); }
-        if(patito.isSelected()){ pick_item.add(patito.getText()); }
-        if(alienigena.isSelected()){ pick_item.add(alienigena.getText()); }
-        if(ovni.isSelected()){ pick_item.add(ovni.getText()); }
-        if(comandante.isSelected()){ pick_item.add(comandante.getText()); }
-        if(llave.isSelected()){ pick_item.add(llave.getText()); }
-        if(te.isSelected()){ pick_item.add(te.getText()); }
-        if(tostada.isSelected()){ pick_item.add(tostada.getText()); }
-        if(copa_sangre.isSelected()){ pick_item.add(copa_sangre.getText()); }
-        if(antorcha.isSelected()){ pick_item.add(antorcha.getText()); }
-        if(naranja.isSelected()){ pick_item.add(naranja.getText()); }
-        if(pera.isSelected()){ pick_item.add(pera.getText()); }
-        if(sake.isSelected()){ pick_item.add(sake.getText()); }
-        if(zanahoria.isSelected()){ pick_item.add(zanahoria.getText()); }
-        if(zumo_tomate.isSelected()){ pick_item.add(zumo_tomate.getText()); }
-        if(melocoton.isSelected()){ pick_item.add(melocoton.getText()); }
-        if(globo.isSelected()){ pick_item.add(globo.getText()); }
-        if(jeringuilla.isSelected()){ pick_item.add(jeringuilla.getText()); }
-        if(pildoras.isSelected()){ pick_item.add(pildoras.getText()); }
-        if(flor.isSelected()){ pick_item.add(flor.getText()); }
-        if(pez.isSelected()){ pick_item.add(pez.getText()); }
-        if(muslo.isSelected()){ pick_item.add(muslo.getText()); }
-        if(bolsa.isSelected()){ pick_item.add(bolsa.getText()); }
-        if(pincel.isSelected()){ pick_item.add(pincel.getText()); }
+        if(parent.queso.isSelected()){ possible_pick_item.add(parent.queso.getText()); }
+        if(parent.palo.isSelected()){ possible_pick_item.add(parent.palo.getText()); }
+        if(parent.serpiente.isSelected()){ possible_pick_item.add(parent.serpiente.getText()); }
+        if(parent.patito.isSelected()){ possible_pick_item.add(parent.patito.getText()); }
+        if(parent.alienigena.isSelected()){ possible_pick_item.add(parent.alienigena.getText()); }
+        if(parent.ovni.isSelected()){ possible_pick_item.add(parent.ovni.getText()); }
+        if(parent.comandante.isSelected()){ possible_pick_item.add(parent.comandante.getText()); }
+        if(parent.llave.isSelected()){ possible_pick_item.add(parent.llave.getText()); }
+        if(parent.te.isSelected()){ possible_pick_item.add(parent.te.getText()); }
+        if(parent.tostada.isSelected()){ possible_pick_item.add(parent.tostada.getText()); }
+        if(parent.copa_sangre.isSelected()){ possible_pick_item.add(parent.copa_sangre.getText()); }
+        if(parent.antorcha.isSelected()){ possible_pick_item.add(parent.antorcha.getText()); }
+        if(parent.naranja.isSelected()){ possible_pick_item.add(parent.naranja.getText()); }
+        if(parent.pera.isSelected()){ possible_pick_item.add(parent.pera.getText()); }
+        if(parent.sake.isSelected()){ possible_pick_item.add(parent.sake.getText()); }
+        if(parent.zanahoria.isSelected()){ possible_pick_item.add(parent.zanahoria.getText()); }
+        if(parent.zumo_tomate.isSelected()){ possible_pick_item.add(parent.zumo_tomate.getText()); }
+        if(parent.melocoton.isSelected()){ possible_pick_item.add(parent.melocoton.getText()); }
+        if(parent.globo.isSelected()){ possible_pick_item.add(parent.globo.getText()); }
+        if(parent.jeringuilla.isSelected()){ possible_pick_item.add(parent.jeringuilla.getText()); }
+        if(parent.pildoras.isSelected()){ possible_pick_item.add(parent.pildoras.getText()); }
+        if(parent.flor.isSelected()){ possible_pick_item.add(parent.flor.getText()); }
+        if(parent.pez.isSelected()){ possible_pick_item.add(parent.pez.getText()); }
+        if(parent.muslo.isSelected()){ possible_pick_item.add(parent.muslo.getText()); }
+        if(parent.bolsa.isSelected()){ possible_pick_item.add(parent.bolsa.getText()); }
+        if(parent.pincel.isSelected()){ possible_pick_item.add(parent.pincel.getText()); }
+
+        parent.writeToConsole("Items to Pick: " + String.join(", ", possible_pick_item));
     }
 
-    private void hand_item(HMessage message) {
-        if(parent.isCurrentGame(TypeMiniGame.LISTA_COMPRA)) return;
+    private void HandItemPacket(HMessage message) {
+        if(!parent.isCurrentGame(TypeMiniGame.LISTA_COMPRA)) return;
+
         HPacket packet = message.getPacket();
 
         int index_player = packet.readInteger();
@@ -285,20 +229,21 @@ public class HandItemGame extends MiniGameController {
 
         if(index_player != parent.getRoom().getHero().getIndex()) return;
 
-        for(String pick_item_name : pick_item){
+        for(String pick_item_name : possible_pick_item){
             if(held.get(pick_item_name) == id_hand_item){
-                item_hand_id = id_hand_item;
+                found_item_hand_id = id_hand_item;
+                parent.writeToConsole("Found Item: " + pick_item_name);
+                possible_pick_item.clear();
+                break;
             }
         }
+
         next_pick = true;
     }
 
     @Override
     public void update(){
-
-        Vector2d me_position = parent.getRoom().getHeroPosition();
-
-        long delay_value = 50; //delay.getText().matches("^(0|[1-9]\\d*)") ? 1000 : Long.parseLong(delay.getText());
+        Vector2d me_position = parent.getRoom().getHero2DPosition();
 
         HFloorItem agujero = null;
         for(int j = -1; j <= 1 && agujero == null; ++j){
@@ -314,11 +259,12 @@ public class HandItemGame extends MiniGameController {
             }
         }
 
-        if(agujero != null && !pick_item.isEmpty()){
+        long delay_value = 0; //delay.getText().matches("^(0|[1-9]\\d*)") ? 1000 : Long.parseLong(delay.getText());
+        if(agujero != null && !possible_pick_item.isEmpty() && next_pick){
             long current_ms = System.currentTimeMillis();
-            if((current_ms - last_pick_time) >= delay_value && item_hand_id < 0 && next_pick){
-                last_pick_time = current_ms;
+            if((current_ms - last_pick_time) >= delay_value){
                 parent.sendToServer("ToggleFloorItem", agujero.getId(), 0);
+                last_pick_time = current_ms;
                 next_pick = false;
             }
         }

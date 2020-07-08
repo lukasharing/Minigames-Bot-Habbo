@@ -12,8 +12,9 @@ import java.util.Map;
 public class RoomMovingManager {
 
     HashMap<Integer, MovingObject> movings;
+    public HashMap<Integer, MovingObject> getElements(){ return movings; };
 
-    Room parent;
+    private Room parent;
 
     RoomMovingManager(Room parent){
         this.parent = parent;
@@ -23,8 +24,14 @@ public class RoomMovingManager {
         parent.getHash().intercept(HMessage.Direction.TOCLIENT, "ObjectOnRoller", this::moving_object);
     }
 
+
+    public void clear(){
+        this.movings.clear();
+    }
+
     public void moving_object(HMessage message) {
-        if(parent.isEmpty()) return; // Wait until Map is fetched
+        if(!parent.isCreated()) return;
+
         HPacket packet = message.getPacket();
 
         int fx = packet.readInteger();
@@ -33,13 +40,19 @@ public class RoomMovingManager {
         int ty = packet.readInteger();
         int c = packet.readInteger();
         int id_furni = packet.readInteger();
-        double z = Double.parseDouble(packet.readString());
+
+        String zs = packet.readString();
+        // There are some entities that has no z value, for example player on a roller.
+        if(zs.isEmpty()) return;
+        double z = Double.parseDouble(zs);
+
         int g = packet.readInteger();
         byte h = packet.readByte();
         int pi = packet.readInteger();
 
         if(movings.containsKey(id_furni)){
             movings.get(id_furni).set(tx, ty, z);
+            parent.update_item(tx, ty, parent.getFurniByID(id_furni));
         }else{
             movings.put(id_furni, new MovingObject(fx, fy, z));
         }
@@ -59,18 +72,5 @@ public class RoomMovingManager {
             ctx.fillOval(padding, padding, radius, radius);
             ctx.restore();
         }
-    }
-
-    public double h(Vector2d pos) {
-        double heuristic = 0.0;
-        for (Map.Entry<Integer, MovingObject> entry : movings.entrySet()) {
-            Vector2d p = entry.getValue().position();
-            p.sub(pos);
-            double length = p.length();
-            if(length < 3.0) {
-                heuristic += Math.exp(-p.length() * 2.0) * 10.0;
-            }
-        }
-        return heuristic;
     }
 }

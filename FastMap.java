@@ -2,41 +2,36 @@ package extensions.fastmap;
 
 import extensions.fastmap.FurniData.FurniData;
 import extensions.fastmap.FurniData.FurniDataManager;
-import extensions.fastmap.Map.AStar;
-import extensions.fastmap.Map.AStarNode;
 import extensions.fastmap.Map.Room;
-import extensions.fastmap.MiniGames.HandItemGame;
-import extensions.fastmap.MiniGames.MiniGameController;
-import extensions.fastmap.MiniGames.ScapeBeastGame;
-import extensions.fastmap.MiniGames.TypeMiniGame;
+import extensions.fastmap.MiniGames.*;
 import gearth.protocol.HMessage;
 import gearth.protocol.HPacket;
+import gearth.extensions.ExtensionForm;
+import gearth.extensions.ExtensionInfo;
+
+import gearth.extensions.extra.harble.HashSupport;
+
+import java.io.File;
+import java.net.URISyntaxException;
+
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import gearth.extensions.ExtensionForm;
-import gearth.extensions.ExtensionInfo;
-
-import gearth.extensions.extra.harble.HashSupport;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-
-import javax.swing.Timer;
+import javafx.util.Duration;
 import javax.vecmath.Vector2d;
-import java.net.URISyntaxException;
 
-import static javax.swing.JOptionPane.showMessageDialog;
 
 @ExtensionInfo(
         Title = "FastMap",
@@ -52,6 +47,34 @@ public class FastMap extends ExtensionForm {
     public Button lista_compra;
     public HBox buttons_minigame;
 
+
+    public CheckBox queso;
+    public CheckBox palo;
+    public CheckBox serpiente;
+    public CheckBox patito;
+    public CheckBox alienigena;
+    public CheckBox ovni;
+    public CheckBox comandante;
+    public CheckBox llave;
+    public CheckBox te;
+    public CheckBox tostada;
+    public CheckBox copa_sangre;
+    public CheckBox antorcha;
+    public CheckBox naranja;
+    public CheckBox pera;
+    public CheckBox sake;
+    public CheckBox zanahoria;
+    public CheckBox zumo_tomate;
+    public CheckBox melocoton;
+    public CheckBox globo;
+    public CheckBox jeringuilla;
+    public CheckBox pildoras;
+    public CheckBox flor;
+    public CheckBox pez;
+    public CheckBox muslo;
+    public CheckBox bolsa;
+    public CheckBox pincel;
+
     private HashSupport hash_manager;
 
     public HashSupport getHash(){ return hash_manager; };
@@ -59,13 +82,15 @@ public class FastMap extends ExtensionForm {
     // Mini Games
     private HandItemGame hand_item_game;
     private ScapeBeastGame scape_beast_game;
+    private CrazyChairs crazy_chairs;
     private FurniDataManager furnis_data;
 
     public FurniData getFurniData(int id_furni){ return furnis_data.get(id_furni); };
 
     private boolean play = false;
 
-    private CanvasRoomManager canvas_manager;
+    private EventController events;
+    public EventController getEvents(){ return events; };
 
     @FXML
     private Canvas canvas;
@@ -73,16 +98,14 @@ public class FastMap extends ExtensionForm {
 
     private GraphicsContext ctx;
 
-    private Scene scene;
-
     private Room current_room;
-    private AStar search_algorithm;
-    public AStarNode AStar(Vector2d init, Vector2d goal){ return search_algorithm.algorithm(init, goal); };
 
-    public Room getRoom(){ return this.current_room; };
+    public Room getRoom(){ return current_room.isCreated() ? this.current_room : null; };
 
     private MiniGameController current_game = null;
     public MiniGameController getCurrentGame(){ return current_game; };
+
+    private Timeline timer_loop;
 
     public static void main(String[] args) {
         runExtensionForm(args, FastMap.class);
@@ -107,15 +130,27 @@ public class FastMap extends ExtensionForm {
         int a = packet.readInteger();
         int b = packet.readInteger();
 
-        if(a == 1 && b == 0) return;
+        if(a == 0 && b == 0){
+            writeToConsole("Room Data Info: " + a + ", " + b);
+            return;
+        }if(a == 0 && b == 1){
+            writeToConsole("Room Data Info: Clear");
+            ctx.clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
+            current_room.clear();
+            current_room.setRoomID(room_id);
+            timer_loop.stop();
+        }else if(a == 1 && b == 0){
+            writeToConsole("Room Data Info: Ready");
+            timer_loop.play();
+        }else{
+            writeToConsole("Room Data Info: " + a + ", " + b);
+        }
 
-        current_room = new Room(this, room_id);
     };
 
+    @FXML
     public void game_option(javafx.event.ActionEvent actionEvent) {
-        final javafx.scene.Node source = (javafx.scene.Node) actionEvent.getSource();
-
-        frames_to_play = 0;
+        final Node source = (javafx.scene.Node) actionEvent.getSource();
 
         for(Node children : buttons_minigame.getChildren()){
             if(children.getTypeSelector().equals("Button")){
@@ -128,7 +163,7 @@ public class FastMap extends ExtensionForm {
         }else{
             source.getStyleClass().add("selected");
             if(source == sillas_locas) {
-                current_game = scape_beast_game;
+                current_game = crazy_chairs;
             }else if(source == huye_enemigo) {
                 current_game = scape_beast_game;
             }else if(source == lista_compra) {
@@ -138,24 +173,11 @@ public class FastMap extends ExtensionForm {
         }
     }
 
-    int frames_to_play = 0;
     public void tick(){
-        this.render();
+        current_room.render(ctx);
         if(current_game != null) {
-            this.update();
+            current_game.update();
         }
-    }
-
-    public void render(){
-
-    }
-
-    public void update(){
-            if(frames_to_play == 0){
-                current_game.update();
-            }
-            frames_to_play = (frames_to_play + 1) % 5;
-
     }
 
     @Override
@@ -165,27 +187,31 @@ public class FastMap extends ExtensionForm {
         hash_manager = new HashSupport(this);
 
         // Canvas Manager
-        canvas_manager = new CanvasRoomManager(this);
+        events = new EventController(this);
 
         // Furni Data
+        writeToConsole("LOAD FURNIDATA XML");
         furnis_data = new FurniDataManager(this);
 
         // Mini Games
+        writeToConsole("INITIALIZE \"HAND ITEM\" GAME");
         hand_item_game = new HandItemGame(this);
+        writeToConsole("INITIALIZE \"SCAPE FROM THE BEAST\" GAME");
         scape_beast_game = new ScapeBeastGame(this);
+        writeToConsole("INITIALIZE \"SCAPE FROM THE BEAST\" GAME");
+        crazy_chairs = new CrazyChairs(this);
 
         // A Star
-        search_algorithm = new AStar(this);
+        writeToConsole("INITIALIZE SEARCHER");
 
         hash_manager.intercept(HMessage.Direction.TOSERVER, "RequestRoomData", this::reset_room_data);
 
+        // Create Empty Room
+        current_room = new Room(this);
 
-        new Timer(1000/30, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tick();
-            }
-        }).start();
+        writeToConsole("INITIALIZE \"TICK\" THREAD");
+        timer_loop = new Timeline(new KeyFrame(Duration.millis(1000/30), event -> tick()));
+        timer_loop.setCycleCount(Animation.INDEFINITE);
     }
 
     public void sendToServer(String hashOrName, Object... objects){ hash_manager.sendToServer(hashOrName, objects); };
@@ -193,6 +219,7 @@ public class FastMap extends ExtensionForm {
 
     public boolean isCurrentGame(TypeMiniGame current_type_game){
         switch(current_type_game){
+            case SILLAS_LOCAS: return current_game == crazy_chairs;
             case LISTA_COMPRA: return current_game == hand_item_game;
             case HUYE_ENEMIGO: return current_game == scape_beast_game;
         }
@@ -205,15 +232,19 @@ public class FastMap extends ExtensionForm {
         Parent root = loader.load();
 
         stage.setTitle("Habbo Fast Moving");
-        scene = new Scene(root);
-        stage.setScene(scene);
+        stage.setScene(new Scene(root));
         stage.setResizable(false);
-
-        scene.getStylesheets().add(FastMap.class.getResource("styles.css").toExternalForm());
+        stage.getScene().getStylesheets().add(FastMap.class.getResource("styles.css").toExternalForm());
 
         return loader.getController();
     }
 
-    public void canvas_clicked(MouseEvent mouseEvent) { canvas_manager.canvas_clicked(mouseEvent); }
-    public void canvas_mousemove(MouseEvent mouseEvent) { canvas_manager.canvas_mousemove(mouseEvent); }
+    public void canvas_clicked(MouseEvent mouseEvent) {
+        events.canvas_clicked(mouseEvent);
+    }
+
+    public void canvas_mousemove(MouseEvent mouseEvent) {
+        events.canvas_mousemove(mouseEvent);
+    }
+
 }

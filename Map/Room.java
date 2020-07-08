@@ -10,6 +10,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import javax.vecmath.Vector2d;
+import javax.vecmath.Vector3d;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
@@ -24,6 +25,8 @@ public class Room {
         }
     }
 
+    private int room_id;
+    public void setRoomID(int room_id){ this.room_id = room_id; };
 
     public static Integer TILE_SIZE = 25;
 
@@ -31,10 +34,10 @@ public class Room {
 
     public RoomTile getTile(int x, int y){ return room.get(new Vector2d(x, y)); };
 
-    public boolean isEmpty(){ return room == null || room.isEmpty(); };
+    public boolean isCreated(){ return room_id >= 0 && room.size() > 0; };
 
-    private int room_width;
-    private int room_height;
+    private int room_width = 0;
+    private int room_height = 0;
 
     public int width(){ return room_width; };
     public int height(){ return room_height; };
@@ -42,47 +45,59 @@ public class Room {
     String hero_name = "lukasdispo";
     public String getHeroName(){ return hero_name; };
     HEntity hero = null;
-    Vector2d hero_position = null;
 
     public HEntity getHero(){ return hero; };
     public void setHero(HEntity hero){ this.hero = hero; };
-    public Vector2d getHeroPosition(){ return hero_position; };
-    public void setHeroPosition(Vector2d position){ this.hero_position = position; };
+    public Vector2d getHero2DPosition(){ return new Vector2d(hero.getTile().getX(), hero.getTile().getY()); };
+    public Vector3d getHero3DPosition(){ return new Vector3d(hero.getTile().getX(), hero.getTile().getY(), hero.getTile().getZ()); };
 
     private final RoomPlayerManager players;
     private final RoomMovingManager movings;
     private final FastMap parent;
+    public FastMap getParent(){ return parent; };
+
     private final HashMap<Integer, HFloorItem> items;
+    public HFloorItem getFurniByID(Integer id){ return items.get(id); };
 
     public RoomPlayerManager getPlayers(){ return players; };
     public RoomMovingManager getMovings(){ return movings; };
 
     public HashSupport getHash(){ return parent.getHash(); };
 
-    public Room(FastMap parent, int room_id){
+    public Room(FastMap parent){
+        this.room_id = -1;
         this.parent = parent;
         this.room = new HashMap<>();
         this.players = new RoomPlayerManager(this);
         this.movings = new RoomMovingManager(this);
         this.items = new HashMap<Integer, HFloorItem>();
 
-        // Hash
-        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RoomFloorItems", this::floor_items);
-        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "AddFloorItem", this::add_item);
-        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RemoveFloorItem", this::remove_item);
-        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "FloorItemUpdate", this::update_item);
+        // PRIMARY Hash
         parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RoomHeightMap", this::generate_height_map);
+        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RoomFloorItems", this::floor_items);
+
+        // SECONDARY Hash
+        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "AddFloorItem", this::add_item);
+        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "FloorItemUpdate", this::update_item);
+        parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RemoveFloorItem", this::remove_item);
+    }
+
+    public void clear() {
+        this.room_id = -1;
+        this.players.clear();
+        this.movings.clear();
+        this.items.clear();
+        this.room.clear();
     }
 
     public FurniData getFurniData(int id_furni){ return parent.getFurniData(id_furni); };
-
 
     public boolean transitable(Vector2d pos){
         if(pos.getX() < 0 || pos.getX() >= room_width || pos.getY() < 0 || pos.getY() >= room_height) return false;
         return room.get(pos).isTransitable();
     };
 
-    public boolean line_transitable(Vector2d a, Vector2d b){
+    public boolean segmentTransitable(Vector2d a, Vector2d b){
 
         double ddx = b.getX() - a.getX();
         double ddy = b.getY() - a.getY();
@@ -115,12 +130,7 @@ public class Room {
         return true;
     }
 
-    public AStarNode AStar(Vector2d init, Vector2d goal){
-        return parent.AStar(init, goal);
-    }
-
-
-    private void add_furni_to_cells(HFloorItem item){
+    public void add_furni_to_tiles(HFloorItem item){
         FurniData furnidata = parent.getFurniData(item.getTypeId());
         int p = (item.getFacing().equals(HDirection.North) || item.getFacing().equals(HDirection.South)) ? 0 : 1;
         for (int j = 0; j < furnidata.h; ++j) {
@@ -132,20 +142,7 @@ public class Room {
         }
     }
 
-    public void floor_items(HMessage message){
-        if(room.isEmpty()) return; // Wait until Map is fetched
-
-        HFloorItem[] floor_items = HFloorItem.parse(message.getPacket());
-
-        for(HFloorItem floor_item : floor_items){
-            items.put(floor_item.getId(), floor_item);
-            if(movings.get(floor_item.getId()) == null) {
-                add_furni_to_cells(floor_item);
-            }
-        }
-    }
-
-    private void remove_furni_from_cells(HFloorItem item){
+    public void remove_furni_from_tiles(HFloorItem item){
         FurniData furnidata = parent.getFurniData(item.getTypeId());
         int p = (item.getFacing().equals(HDirection.North) || item.getFacing().equals(HDirection.South)) ? 0 : 1;
         for (int j = 0; j < furnidata.h; ++j) {
@@ -157,45 +154,9 @@ public class Room {
         }
     }
 
-    public void add_item(HMessage message){
-        if(room.isEmpty()) return; // Wait until Map is fetched
-
-        HPacket packet = message.getPacket();
-        HFloorItem floor_item = new HFloorItem(packet);
-        items.put(floor_item.getId(), floor_item);
-        add_furni_to_cells(floor_item);
-    }
-
-    public void remove_item(HMessage message){
-        if(room.isEmpty()) return; // Wait until Map is fetched
-
-        HPacket packet = message.getPacket();
-
-        int id_item = Integer.parseInt(packet.readString());
-        boolean a = packet.readBoolean();
-        int b = packet.readInteger();
-        int c = packet.readInteger();
-        remove_furni_from_cells(items.get(id_item));
-        items.remove(id_item);
-    }
-
-    public void update_item(HMessage message){
-        if(room.isEmpty()) return; // Wait until Map is fetched
-
-        HPacket packet = message.getPacket();
-        HFloorItem floor_item = new HFloorItem(packet);
-
-        // Update Old Information
-        if(items.containsKey(floor_item.getId())){
-            remove_furni_from_cells(items.get(floor_item.getId()));
-        }
-        // Update
-        items.put(floor_item.getId(), floor_item);
-        add_furni_to_cells(floor_item);
-    }
-
+    // PRIMARY HASH
     public void generate_height_map(HMessage message){
-        if(!room.isEmpty()) return; // Wait until Map is fetched
+        if(isCreated()) return;
 
         HPacket packet = message.getPacket();
 
@@ -206,6 +167,7 @@ public class Room {
 
         room_height = map_string.length;
         room_width = map_string[0].length();
+        parent.writeToConsole("1. Creating Room of " + room_width + "x" + room_height + " tiles");
         for(int j = 0; j < room_height; ++j){
             String row = map_string[j];
             for(int i = 0; i < room_width; ++i){
@@ -214,8 +176,66 @@ public class Room {
         }
     }
 
+    public void floor_items(HMessage message){
+        if(!isCreated()) return;
+
+        HFloorItem[] floor_items = HFloorItem.parse(message.getPacket());
+
+        for(HFloorItem floor_item : floor_items){
+            items.put(floor_item.getId(), floor_item);
+            if(movings.get(floor_item.getId()) == null) {
+                add_furni_to_tiles(floor_item);
+            }
+        }
+        parent.writeToConsole("2. Placing Furnis to room");
+    }
+
+    public void add_item(HMessage message){
+        if(!isCreated()) return;
+
+        HPacket packet = message.getPacket();
+        HFloorItem floor_item = new HFloorItem(packet);
+        items.put(floor_item.getId(), floor_item);
+        add_furni_to_tiles(floor_item);
+    }
+
+    public void remove_item(HMessage message){
+        if(!isCreated()) return;
+
+        HPacket packet = message.getPacket();
+
+        int id_item = Integer.parseInt(packet.readString());
+        boolean a = packet.readBoolean();
+        int b = packet.readInteger();
+        int c = packet.readInteger();
+        remove_furni_from_tiles(items.get(id_item));
+        items.remove(id_item);
+    }
+
+    public void update_item(HMessage message){
+        if(!isCreated()) return;
+
+        HPacket packet = message.getPacket();
+        HFloorItem floor_item = new HFloorItem(packet);
+
+        // Update Old Information
+        if(items.containsKey(floor_item.getId())){
+            remove_furni_from_tiles(items.get(floor_item.getId()));
+        }
+        // Update
+        items.put(floor_item.getId(), floor_item);
+        add_furni_to_tiles(floor_item);
+    }
+
+    public void update_item(int x, int y, HFloorItem floor_item){
+        // Update Old Information
+        remove_furni_from_tiles(floor_item);
+        floor_item.setTile(new HPoint(x, y, floor_item.getTile().getZ()));
+        add_furni_to_tiles(floor_item);
+    }
+
     public void render(GraphicsContext ctx){
-        if(room.isEmpty()) return; // Wait until Map is fetched
+        if(!isCreated()) return;
 
         int canvas_width = (int)parent.getCanvas().getWidth();
         int canvas_height = (int)parent.getCanvas().getHeight();
@@ -231,20 +251,8 @@ public class Room {
         for(int j = 0; j < room_height; ++j){
             ctx.save();
             for(int i = 0; i < room_width; ++i){
-                RoomTile cell = room.get(new Vector2d(i, j));
-                if(!cell.is_wall) {
-                    if (cell.height_value > 0.0) {
-                        int hue = (int) (cell.height_value  / 20.0 * 360.0);
-                        ctx.setFill(Color.hsb(hue, 1.0, 0.80));
-                        ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE);
-                        if(cell.can_sit){
-                            ctx.setFill(Color.BLACK);
-                            ctx.fillRect(2, 2, 4, TILE_SIZE - 4);
-                        }
-                    }
-                    ctx.setStroke(Color.BLACK);
-                    ctx.strokeRect(0, 0, TILE_SIZE, TILE_SIZE);
-                }
+                RoomTile tile = room.get(new Vector2d(i, j));
+                tile.render(ctx);
                 ctx.translate(TILE_SIZE, 0);
             }
             ctx.restore();
@@ -252,16 +260,20 @@ public class Room {
         }
         ctx.restore();
 
+        // Draw Minigame
+        if(parent.getCurrentGame() != null){
+            parent.getCurrentGame().render(ctx);
+        }
+
         // Movings
         movings.render(ctx);
 
         // Draw Users
         players.render(ctx);
 
-        // parent.getMouseManager().render(ctx);
+        // Daw Canvas UI
+        parent.getEvents().render(ctx);
 
         ctx.restore();
     }
-
-
 }

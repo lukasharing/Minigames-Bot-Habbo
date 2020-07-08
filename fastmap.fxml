@@ -71,7 +71,7 @@
                                                    <children>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;">
                                                          <children>
-                                                            <ImageView fx:id="zanahoria_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="zanahoria_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="zanahoria" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="180.0" text="Zanahoria">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -81,7 +81,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="1">
                                                          <children>
-                                                            <ImageView fx:id="sake_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="sake_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="sake" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Sake">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -91,7 +91,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="2">
                                                          <children>
-                                                            <ImageView fx:id="pera_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="pera_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="pera" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="pera">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -101,7 +101,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" maxWidth="1.7976931348623157E308" style="-fx-border-color: #aaa;" GridPane.columnIndex="3">
                                                          <children>
-                                                            <ImageView fx:id="naranja_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="naranja_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="naranja" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="naranja">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -121,7 +121,7 @@
                                                        </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.rowIndex="1">
                                                          <children>
-                                                            <ImageView fx:id="antorcha_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="antorcha_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="antorcha" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Antorcha Habbo-lympix">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -131,7 +131,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="copa_sangre_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="copa_sangre" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Copa de sangre">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -141,7 +141,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="tostada_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="tostada" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Tostada">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -151,7 +151,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="te_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="te" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Té">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -161,7 +161,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.rowIndex="2">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="llave_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="llave" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Llave inglesa">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -171,7 +171,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="comandante_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="comandante" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Comandante Tom">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -181,7 +181,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="ovni_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="ovni" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="OVNI">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -191,7 +191,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="alienigena_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="alienigena" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Cosa alienígena">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -201,7 +201,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.rowIndex="3">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="patito_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="patito" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Patito de goma">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -211,7 +211,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="serpiente_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="serpiente" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Serpiente">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -221,7 +221,7 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="2" GridPane.rowIndex="3">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ImageView id="palo_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                             <CheckBox fx:id="palo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Palo">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
@@ -231,8 +231,8 @@
                                                       </VBox>
                                                       <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="3" GridPane.rowIndex="3">
                                                          <children>
-                                                            <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
-                                                            <CheckBox fx:id="rebanada" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Rebanada de queso">
+                                                            <ImageView id="queso_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <CheckBox fx:id="queso" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Rebanada de queso">
                                                                <VBox.margin>
                                                                   <Insets left="10.0" right="10.0" />
                                                                </VBox.margin>
@@ -241,7 +241,7 @@
                                                       </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.rowIndex="4">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="jeringuilla_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="jeringuilla" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Jeringuilla">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -251,7 +251,7 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="globo_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="globo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Globo">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -261,7 +261,7 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="2" GridPane.rowIndex="4">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="zumo_tomate_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="zumo_tomate" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Zumo de tomate">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -271,7 +271,7 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="3" GridPane.rowIndex="4">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="melocoton_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="melocoton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Melocotón delicioso">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -281,7 +281,7 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="4" GridPane.rowIndex="1">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="flor_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="flor" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Flor Bolly">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -291,8 +291,8 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="4" GridPane.rowIndex="2">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
-                                                               <CheckBox fx:id="pez" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Pescado Fresco">
+                                                               <ImageView id="pez_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <CheckBox fx:id="pez" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Pescado fresco">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
                                                                    </VBox.margin>
@@ -301,7 +301,7 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="4" GridPane.rowIndex="3">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="muslo_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="muslo" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Muslo de pollo">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -311,8 +311,8 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="4" GridPane.rowIndex="4">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
-                                                               <CheckBox fx:id="pincel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Picel">
+                                                               <ImageView id="pincel_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <CheckBox fx:id="pincel" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Pincel">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
                                                                    </VBox.margin>
@@ -321,7 +321,7 @@
                                                        </VBox>
                                                        <VBox alignment="TOP_CENTER" style="-fx-border-color: #aaa;" GridPane.columnIndex="5" GridPane.rowIndex="0">
                                                            <children>
-                                                               <ImageView fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
+                                                               <ImageView id="bolsa_img" fitHeight="90.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" />
                                                                <CheckBox fx:id="bolsa" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Bolsa de Residuos Tóxicos">
                                                                    <VBox.margin>
                                                                        <Insets left="10.0" right="10.0" />
@@ -337,7 +337,7 @@
                                     </ScrollPane>
                                     <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="50.0">
                                        <children>
-                                          <TextField fx:id="delay" prefHeight="25.0" prefWidth="245.0" text="Introduzca el retraso en la búsqueda en ms">
+                                          <TextField id="delay" prefHeight="25.0" prefWidth="245.0" text="Introduzca el retraso en la búsqueda en ms">
                                              <HBox.margin>
                                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                              </HBox.margin>
