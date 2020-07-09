@@ -15,8 +15,7 @@ import java.util.Map;
 public class ScapeBeastGame extends MiniGameController {
 
     // Huye
-    private int RADIUS = 3;
-    private double EnemyFactor = 100.0;
+    private int RADIUS = 4;
     private int ticks;
 
 
@@ -37,37 +36,19 @@ public class ScapeBeastGame extends MiniGameController {
         for (Map.Entry<Integer, MovingObject> entry : parent.getRoom().getMovings().getElements().entrySet()) {
             Vector2d p = entry.getValue().position();
             p.sub(pos);
-            double length = p.length();
-            if(length < 3.0) {
-                heuristic += Math.exp(-length) * 10.0;
-            }
-        }
-        return heuristic;
-    };
-
-    public double hPlayers(Vector2d pos) {
-        double heuristic = 0.0;
-        for (Map.Entry<Integer, HEntity> entry : parent.getRoom().getPlayers().getElements().entrySet()) {
-            HPoint position = entry.getValue().getTile();
-            Vector2d p = new Vector2d(position.getX(), position.getY());
-            p.sub(pos);
-            double length = p.length();
-            if(length < 2.0) {
-                heuristic += Math.exp(-length) * 5.0;
-            }
+            heuristic += Math.exp(-p.length() * 2.0) * 50.0;
         }
         return heuristic;
     };
 
     @Override
-    public double h(Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){
-        Vector2d hero = parent.getRoom().getHero2DPosition();
+    public double h(AStarNode node, Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){
+        Vector2d position = node.getPosition();
         Vector2d goal_copy = (Vector2d)goal.clone();
-        goal_copy.sub(hero);
+        goal_copy.sub(position);
 
         double heuristic = 0.0;
-        //heuristic += hMovings(hero);
-        //heuristic += hPlayers(hero);
+        heuristic += hMovings(position);
 
         return goal_copy.length() + heuristic;
     };
@@ -87,21 +68,26 @@ public class ScapeBeastGame extends MiniGameController {
         Room room = parent.getRoom();
         Vector2d hero_position = room.getHero2DPosition();
 
+        // The path has to be optimal and the longest possible
         double best_f = 1e10;
+        double longest_path = 0.0;
         if(destiny == null) {
-            /*for (int j = -RADIUS; j <= RADIUS; ++j) {
+
+            for (int j = -RADIUS; j <= RADIUS; ++j) {
                 for (int i = -RADIUS; i <= RADIUS; ++i) {
                     Vector2d possible = new Vector2d(hero_position.getX() + i, hero_position.getY() + j);
                     if (room.segmentTransitable(possible, hero_position)) {
                         AStarNode path = search_algorithm.algorithm(hero_position,  possible);
                         double current_f = path.f();
-                        if (path != null && current_f < best_f) {
+                        double path_distance = i * i + j * j;
+                        if (path != null && current_f < best_f && path_distance >= longest_path) {
                             best_f = current_f;
+                            longest_path = path_distance;
                             best_path = path;
                         }
                     }
                 }
-            }*/
+            }
         }else{
             best_path = search_algorithm.algorithm(hero_position, destiny);
         }
@@ -110,9 +96,8 @@ public class ScapeBeastGame extends MiniGameController {
             if(best_path.getPosition().equals(hero_position)){
                 destiny = null;
             }else{
-                Vector2d best = AStar.backtracking_action(best_path);
-                parent.writeToConsole(":> "+(int) best.x + "," + (int) best.y);
-                //parent.sendToServer("RoomUserWalk", (int)best.x, (int)best.y);
+                Vector2d best = best_path.getPosition();//;AStar.backtracking_action(best_path);
+                parent.sendToServer("RoomUserWalk", (int)best.x, (int)best.y);
             }
         }
     }

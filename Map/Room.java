@@ -13,6 +13,7 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Room {
 
@@ -94,6 +95,16 @@ public class Room {
 
     public boolean transitable(Vector2d pos){
         if(pos.getX() < 0 || pos.getX() >= room_width || pos.getY() < 0 || pos.getY() >= room_height) return false;
+        for (Map.Entry<Integer, HEntity> entry : players.getElements().entrySet()) {
+            if(!entry.getValue().getName().equals(hero_name)) {
+                HPoint tile = entry.getValue().getTile();
+                Vector2d player_position = new Vector2d(tile.getX(), tile.getY());
+                if (player_position.equals(pos)) {
+                    return false;
+                }
+            }
+        }
+
         return room.get(pos).isTransitable();
     };
 

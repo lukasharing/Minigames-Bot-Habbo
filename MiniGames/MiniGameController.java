@@ -1,9 +1,7 @@
 package extensions.fastmap.MiniGames;
 
 import extensions.fastmap.FastMap;
-import extensions.fastmap.Map.Room;
-import extensions.fastmap.Map.RoomMovingManager;
-import extensions.fastmap.Map.RoomPlayerManager;
+import extensions.fastmap.Map.*;
 import javafx.scene.canvas.GraphicsContext;
 
 import javax.vecmath.Vector2d;
@@ -27,5 +25,5 @@ public class MiniGameController {
     public void render(GraphicsContext ctx) {
     }
 
-    public double h(Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){ return 0.0; }
+    public double h(AStarNode node, Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){ return 0.0; }
 }

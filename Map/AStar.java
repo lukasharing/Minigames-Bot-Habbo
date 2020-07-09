@@ -13,7 +13,7 @@ public class AStar {
         this.parent = parent;
     }
 
-    public double h(Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){ return parent.h(goal, movings, users); };
+    public double h(AStarNode node, Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){ return parent.h(node, goal, movings, users); };
 
     public AStarNode algorithm(Vector2d init, Vector2d goal) {
         Room room = parent.getRoom();
@@ -26,8 +26,7 @@ public class AStar {
         AStarNode[][] visited = new AStarNode[room.height()][room.width()];
         visited[(int)init.getY()][(int)init.getX()] = a_from;
 
-        int ticks = 0;
-        while (!open.isEmpty() && ++ticks < 10) {
+        while (!open.isEmpty()) {
             AStarNode expanded = open.poll();
 
             if (expanded.getPosition().equals(goal)) {
@@ -38,7 +37,7 @@ public class AStar {
             for(int v = -1; v <= 1; ++v){
                 for(int w = -1; w <= 1; ++w){
                     Vector2d posibility = new Vector2d(x + w, y + v);
-                    if(w != 0 && v != 0 && room.transitable(posibility)){
+                    if(!(w == 0 && v == 0) && room.transitable(posibility)){
                         AStarNode a_top = visited[y + v][x + w];
                         AStarNode child = new AStarNode(this, expanded, new Vector2d(x + w, y + v));
                         child.f(goal, room.getMovings(), room.getPlayers());

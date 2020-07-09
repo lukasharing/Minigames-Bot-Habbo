@@ -31,7 +31,7 @@ public class AStarNode implements Comparable<AStarNode>{
     }
 
     public void f(Vector2d goal, RoomMovingManager movings, RoomPlayerManager users){
-        this.h = parent.h(goal, movings, users);
+        this.h = parent.h(this, goal, movings, users);
         if(this.from != null){
             g();
         }
