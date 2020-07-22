@@ -24,13 +24,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.util.Duration;
-import javax.vecmath.Vector2d;
 
 
 @ExtensionInfo(
@@ -64,6 +64,7 @@ public class FastMap extends ExtensionForm {
     public CheckBox pera;
     public CheckBox sake;
     public CheckBox zanahoria;
+    public ImageView zanahoria_img;
     public CheckBox zumo_tomate;
     public CheckBox melocoton;
     public CheckBox globo;
@@ -111,10 +112,11 @@ public class FastMap extends ExtensionForm {
         runExtensionForm(args, FastMap.class);
     }
 
-    public static String getFolderPath() {
+    public String getFolderPath() {
         File Dir = null;
         try {
             Dir = new File(FastMap.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+            writeToConsole(FastMap.class.getProtectionDomain().getCodeSource().getLocation().toURI().toASCIIString());
             if (Dir.getName().equals("Extensions")) {
                 Dir = Dir.getParentFile();
             }
@@ -174,10 +176,10 @@ public class FastMap extends ExtensionForm {
     }
 
     public void tick(){
-        current_room.render(ctx);
         if(current_game != null) {
             current_game.update();
         }
+        current_room.render(ctx);
     }
 
     @Override
@@ -228,7 +230,7 @@ public class FastMap extends ExtensionForm {
 
     @Override
     public ExtensionForm launchForm(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(FastMap.class.getResource("fastmap.fxml"));
+        FXMLLoader loader = new FXMLLoader(FastMap.class.getResource("../../../resources/fastmap.fxml"));
         Parent root = loader.load();
 
         stage.setTitle("Habbo Fast Moving");

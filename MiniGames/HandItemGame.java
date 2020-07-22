@@ -5,8 +5,10 @@ import extensions.fastmap.Map.RoomTile;
 import gearth.extensions.parsers.HFloorItem;
 import gearth.protocol.HMessage;
 import gearth.protocol.HPacket;
+import javafx.scene.image.Image;
 
 import javax.vecmath.Vector2d;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,14 +37,14 @@ public class HandItemGame extends MiniGameController {
         held.put("Té", 1);
         held.put("Zumo", 2);
         held.put("Zanahoria", 3); // Agujero Negro
-        //zanahoria_img.setImage(new Image("Zanahoria.png"));
+        //parent.zanahoria_img.setImage(new Image("src/main/resources/Zanahoria.png"));
         held.put("Helado", 4);
         held.put("Leche", 5);
         held.put("Grosella", 6);
         held.put("Agua", 7);
         held.put("Café Solo", 8);
         held.put("Agua", 9);
-        held.put("Té", 10);
+        //held.put("Té", 10);
         held.put("Mocha", 11);
         held.put("Macchiato", 12);
         held.put("Espresso", 13);
@@ -59,7 +61,7 @@ public class HandItemGame extends MiniGameController {
         held.put("Refresco burbujeante de 1978", 24);
         held.put("Brebaje del amor", 25);
         held.put("Calippo", 26);
-        held.put("Té", 27); // Agujero Negro
+        //held.put("Té", 27);
         held.put("Sake", 28); // Agujero Negro
         //sake_img.setImage(new Image("extensions/fastmap/assets/Sake.png"));
         held.put("Zumo de tomate", 29);
@@ -248,9 +250,9 @@ public class HandItemGame extends MiniGameController {
         HFloorItem agujero = null;
         for(int j = -1; j <= 1 && agujero == null; ++j){
             for(int i = -1; i <= 1 && agujero == null; ++i){
-                RoomTile tile = parent.getRoom().getTile((int)(i + me_position.getX()), (int)(j  + me_position.getY()));
-
-                if(tile != null) {
+                Vector2d pos = new Vector2d(i + me_position.getX(), j + me_position.getY());
+                RoomTile tile = parent.getRoom().getTile((int)pos.getX(), (int)pos.getY());
+                if (tile != null) {
                     HFloorItem current = tile.getItem("Agujero Negro");
                     if (current != null && parent.getFurniData(current.getTypeId()).getCategory().equals("vending_machine")) {
                         agujero = current;

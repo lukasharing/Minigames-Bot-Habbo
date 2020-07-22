@@ -39,9 +39,7 @@ public class AStarNode implements Comparable<AStarNode>{
     };
 
     private void g(){
-        Vector2d dir = (Vector2d)this.from.getPosition().clone();
-        dir.sub(pos);
-        this.g = this.from.g + dir.length();
+        this.g = this.from.g + 1.0;
     };
 
     @Override

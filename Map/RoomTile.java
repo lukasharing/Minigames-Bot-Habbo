@@ -76,7 +76,7 @@ public class RoomTile {
     }
 
     public HFloorItem getItem(String item_name) {
-        if(is_wall) return null;
+        if(is_wall || furnis.isEmpty()) return null;
 
         for(HFloorItem item : furnis.values()) {
             if(parent.getFurniData(item.getTypeId()).getName().equals(item_name)) {

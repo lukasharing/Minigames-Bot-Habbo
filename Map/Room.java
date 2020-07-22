@@ -122,10 +122,6 @@ public class Room {
         Vector2d c = (Vector2d)a.clone();
         while (true) {
 
-            if (!transitable(c)) {
-                return false;
-            }
-
             if (c.getX() == b.getX() && c.getY() == b.getY()) break;
 
             double e2 = 2 * err;
@@ -136,6 +132,10 @@ public class Room {
             if (e2 <= dx) {
                 err += dx;
                 c.add(new Vector2d(0.0, sy));
+            }
+
+            if (!transitable(c)) {
+                return false;
             }
         }
         return true;

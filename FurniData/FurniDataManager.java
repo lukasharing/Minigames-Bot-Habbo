@@ -17,7 +17,7 @@ public class FurniDataManager {
     public FurniDataManager(FastMap parent) {
         furnisdata = new HashMap<Integer, FurniData>();
         try{
-            File xml = new File(FastMap.getFolderPath() + "/furnidata.xml");
+            File xml = new File(parent.getFolderPath() + "/furnidata.xml");
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(xml);

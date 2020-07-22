@@ -67,7 +67,7 @@ public class RoomMovingManager {
             int padding = 4;
             int radius = Room.TILE_SIZE - 2 * padding;
             ctx.save();
-            ctx.translate(Room.TILE_SIZE * item_information.x, Room.TILE_SIZE * item_information.y);
+            ctx.translate(Room.TILE_SIZE * item_information.x(), Room.TILE_SIZE * item_information.y());
             ctx.setFill(Color.RED);
             ctx.fillOval(padding, padding, radius, radius);
             ctx.restore();

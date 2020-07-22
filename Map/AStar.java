@@ -34,21 +34,56 @@ public class AStar {
             }
 
             int x = expanded.x(), y = expanded.y();
-            for(int v = -1; v <= 1; ++v){
-                for(int w = -1; w <= 1; ++w){
-                    Vector2d posibility = new Vector2d(x + w, y + v);
-                    if(!(w == 0 && v == 0) && room.transitable(posibility)){
-                        AStarNode a_top = visited[y + v][x + w];
-                        AStarNode child = new AStarNode(this, expanded, new Vector2d(x + w, y + v));
-                        child.f(goal, room.getMovings(), room.getPlayers());
 
-                        if (a_top == null || (a_top != null && child.f() <= a_top.f())) {
-                            open.add(child);
-                            visited[y + v][x + w] = child;
-                        }
-                    }
+            Vector2d left = new Vector2d(x - 1, y + 0);
+            if(room.transitable(left)){
+                AStarNode a_top = visited[y + 0][x - 1];
+                AStarNode child = new AStarNode(this, expanded, new Vector2d(x - 1, y + 0));
+                child.f(goal, room.getMovings(), room.getPlayers());
+
+                if (a_top == null || (a_top != null && child.f() <= a_top.f())) {
+                    open.add(child);
+                    visited[y + 0][x - 1] = child;
                 }
             }
+
+            Vector2d right = new Vector2d(x + 1, y + 0);
+            if(room.transitable(left)){
+                AStarNode a_top = visited[y + 0][x + 1];
+                AStarNode child = new AStarNode(this, expanded, new Vector2d(x + 1, y + 0));
+                child.f(goal, room.getMovings(), room.getPlayers());
+
+                if (a_top == null || (a_top != null && child.f() <= a_top.f())) {
+                    open.add(child);
+                    visited[y + 0][x + 1] = child;
+                }
+            }
+
+            Vector2d top = new Vector2d(x + 0, y - 1);
+            if(room.transitable(left)){
+                AStarNode a_top = visited[y - 1][x + 0];
+                AStarNode child = new AStarNode(this, expanded, new Vector2d(x + 0, y - 1));
+                child.f(goal, room.getMovings(), room.getPlayers());
+
+                if (a_top == null || (a_top != null && child.f() <= a_top.f())) {
+                    open.add(child);
+                    visited[y - 1][x + 0] = child;
+                }
+            }
+
+
+            Vector2d bottom = new Vector2d(x + 0, y + 1);
+            if(room.transitable(left)){
+                AStarNode a_top = visited[y + 1][x + 0];
+                AStarNode child = new AStarNode(this, expanded, new Vector2d(x + 0, y + 1));
+                child.f(goal, room.getMovings(), room.getPlayers());
+
+                if (a_top == null || (a_top != null && child.f() <= a_top.f())) {
+                    open.add(child);
+                    visited[y + 1][x + 0] = child;
+                }
+            }
+
         }
         return null;
     }

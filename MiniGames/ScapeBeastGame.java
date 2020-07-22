@@ -18,6 +18,17 @@ public class ScapeBeastGame extends MiniGameController {
     private int RADIUS = 4;
     private int ticks;
 
+    private int KERNEL_SIZE = 2;
+    private double[][] GaussKernel = new double[][]{
+            {0.00366, 0.01465, 0.02564, 0.01465, 0.00366},
+            {0.01465, 0.05860, 0.09523, 0.05860, 0.01465},
+            {0.02564, 0.09523, 0.15018, 0.09523, 0.02564},
+            {0.01465, 0.05860, 0.09523, 0.05860, 0.01465},
+            {0.00366, 0.01465, 0.02564, 0.01465, 0.00366}
+    };
+    private double EnemyFactor = 100.0;
+
+    private double[][] heatmap;
 
     private AStarNode best_path = null;
     private Vector2d destiny;
@@ -28,17 +39,22 @@ public class ScapeBeastGame extends MiniGameController {
     public ScapeBeastGame(FastMap parent){
         super(parent);
         this.destiny = null;
+        this.heatmap = null;
         this.search_algorithm = new AStar(this);
     }
 
-    public double hMovings(Vector2d pos) {
-        double heuristic = 0.0;
-        for (Map.Entry<Integer, MovingObject> entry : parent.getRoom().getMovings().getElements().entrySet()) {
-            Vector2d p = entry.getValue().position();
-            p.sub(pos);
-            heuristic += Math.exp(-p.length() * 2.0) * 50.0;
+    private double discrete_integral(Vector2d pos, int r){
+        double ht = 0.0;
+        int x = (int)pos.getX();
+        int y = (int)pos.getY();
+        for (int j = -r; j <= r; ++j) {
+            for (int i = -r; i <= r; ++i) {
+                if(parent.getRoom().segmentTransitable(pos, new Vector2d(x + i, y + j))) {
+                    ht += heatmap[y + j][x + i];
+                }
+            }
         }
-        return heuristic;
+        return ht;
     };
 
     @Override
@@ -47,10 +63,7 @@ public class ScapeBeastGame extends MiniGameController {
         Vector2d goal_copy = (Vector2d)goal.clone();
         goal_copy.sub(position);
 
-        double heuristic = 0.0;
-        heuristic += hMovings(position);
-
-        return goal_copy.length() + heuristic;
+        return goal_copy.length() + discrete_integral(position, 2) * EnemyFactor;
     };
 
     @Override
@@ -62,49 +75,79 @@ public class ScapeBeastGame extends MiniGameController {
 
     @Override
     public void update() {
-        ticks = (ticks + 1) % 10;
+        ticks = ++ticks % 5;
         if(ticks != 0) return;
 
         Room room = parent.getRoom();
         Vector2d hero_position = room.getHero2DPosition();
 
+        // Clear Heatmap
+        for(int j = 0; j < room.height(); ++j){
+            for(int i = 0;i < room.width(); ++i){
+                heatmap[j][i] = 0.0;
+            }
+        }
+
+        for (Map.Entry<Integer, MovingObject> entry : parent.getRoom().getMovings().getElements().entrySet()) {
+            int x = entry.getValue().x();
+            int y = entry.getValue().y();
+            for (int j = -KERNEL_SIZE; j <= KERNEL_SIZE; ++j) {
+                for (int i = -KERNEL_SIZE; i <= KERNEL_SIZE; ++i) {
+                    if (room.segmentTransitable(entry.getValue().position(), new Vector2d(x + i, y + j))) {
+                        heatmap[y + j][x + i] += GaussKernel[j + KERNEL_SIZE][i + KERNEL_SIZE];
+                    }
+                }
+            }
+        }
+
         // The path has to be optimal and the longest possible
         double best_f = 1e10;
         double longest_path = 0.0;
         if(destiny == null) {
-
-            for (int j = -RADIUS; j <= RADIUS; ++j) {
+            /*for (int j = -RADIUS; j <= RADIUS; ++j) {
                 for (int i = -RADIUS; i <= RADIUS; ++i) {
                     Vector2d possible = new Vector2d(hero_position.getX() + i, hero_position.getY() + j);
-                    if (room.segmentTransitable(possible, hero_position)) {
+                    if (room.segmentTransitable(hero_position, possible)) {
                         AStarNode path = search_algorithm.algorithm(hero_position,  possible);
                         double current_f = path.f();
-                        double path_distance = i * i + j * j;
-                        if (path != null && current_f < best_f && path_distance >= longest_path) {
+                        if (path != null && current_f < best_f) {
                             best_f = current_f;
-                            longest_path = path_distance;
                             best_path = path;
                         }
                     }
                 }
-            }
+            }*/
         }else{
             best_path = search_algorithm.algorithm(hero_position, destiny);
         }
 
-        if(best_path != null){
-            if(best_path.getPosition().equals(hero_position)){
-                destiny = null;
-            }else{
-                Vector2d best = best_path.getPosition();//;AStar.backtracking_action(best_path);
-                parent.sendToServer("RoomUserWalk", (int)best.x, (int)best.y);
-            }
-        }
+        /*if(best_path == null || (best_path != null && best_path.getPosition().equals(hero_position))){
+            destiny = null;
+        }else{
+            //Vector2d best = best_path.getPosition();//;AStar.backtracking_action(best_path);
+            //parent.sendToServer("RoomUserWalk", (int)best.x, (int)best.y);
+        }*/
     }
 
     public void render(GraphicsContext ctx){
 
         AStarNode backtracking = best_path;
+
+        ctx.save();
+        for(int j = 0; j < parent.getRoom().height(); ++j){
+            ctx.save();
+            for(int i = 0; i < parent.getRoom().width(); ++i){
+                if(heatmap[j][i] > 0.0) {
+                    int hue = (int) (heatmap[j][i] * 360.0);
+                    ctx.setFill(Color.hsb(hue, 1.0, 1.0));
+                    ctx.fillRect(0, 0, Room.TILE_SIZE, Room.TILE_SIZE);
+                }
+                ctx.translate(Room.TILE_SIZE, 0);
+            }
+            ctx.restore();
+            ctx.translate(0, Room.TILE_SIZE);
+        }
+        ctx.restore();
 
         if(backtracking == null) return;
 

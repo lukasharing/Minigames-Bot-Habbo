@@ -3,9 +3,12 @@ package extensions.fastmap.Map;
 import javax.vecmath.Vector2d;
 
 public class MovingObject {
-    public int x;
-    public int y;
-    public double z;
+    private int x;
+    public int x(){ return x; }
+    private int y;
+    public int y(){ return y; }
+    private double z;
+    public double z(){ return z; }
     MovingObject(int _x, int _y, double _z){
         x = _x;
         y = _y;
