@@ -78,6 +78,9 @@ public class FastMap extends ExtensionForm {
 
     private HashSupport hash_manager;
 
+    // Math
+    public static double fract(double a) { return a - Math.floor(a); };
+
     public HashSupport getHash(){ return hash_manager; };
 
     // Mini Games
@@ -175,7 +178,8 @@ public class FastMap extends ExtensionForm {
         }
     }
 
-    public void tick(){
+    public void tick(double delta){
+        current_room.update(delta);
         if(current_game != null) {
             current_game.update();
         }
@@ -212,7 +216,15 @@ public class FastMap extends ExtensionForm {
         current_room = new Room(this);
 
         writeToConsole("INITIALIZE \"TICK\" THREAD");
-        timer_loop = new Timeline(new KeyFrame(Duration.millis(1000/30), event -> tick()));
+
+        float fps = 30;
+        timer_loop = new Timeline(
+                new KeyFrame(Duration.millis(1000 / fps),
+                event -> {
+                    double delta = fract(((Timeline)event.getSource()).getCurrentTime().toSeconds());
+                    tick(delta);
+                })
+        );
         timer_loop.setCycleCount(Animation.INDEFINITE);
     }
 

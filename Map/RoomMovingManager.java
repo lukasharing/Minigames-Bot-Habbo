@@ -1,5 +1,6 @@
 package extensions.fastmap.Map;
 
+import extensions.fastmap.FastMap;
 import gearth.protocol.HMessage;
 import gearth.protocol.HPacket;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,12 +23,12 @@ public class RoomMovingManager {
 
         // Hash
         parent.getHash().intercept(HMessage.Direction.TOCLIENT, "ObjectOnRoller", this::moving_object);
-    }
+    };
 
 
     public void clear(){
         this.movings.clear();
-    }
+    };
 
     public void moving_object(HMessage message) {
         if(!parent.isCreated()) return;
@@ -56,21 +57,34 @@ public class RoomMovingManager {
         }else{
             movings.put(id_furni, new MovingObject(fx, fy, z));
         }
-    }
+    };
 
     public MovingObject get(Integer idx){ return movings.get(idx); };
+
+
+    public void update(double delta) {
+
+        float amplification = 1.1f;
+        float h = (float) Math.min(delta * amplification, 1.0); // [0 - 1) -> [0 - 1.1) -> [0 - 1]
+
+        for (Map.Entry<Integer, MovingObject> entry : movings.entrySet()) {
+            MovingObject moving = entry.getValue();
+            moving.interpolation2D(h);
+        }
+
+    };
 
     public void render(GraphicsContext ctx) {
         // Draw Moving Entities
         for (Map.Entry<Integer, MovingObject> entry : movings.entrySet()) {
-            MovingObject item_information = entry.getValue();
+            MovingObject moving = entry.getValue();
             int padding = 4;
             int radius = Room.TILE_SIZE - 2 * padding;
             ctx.save();
-            ctx.translate(Room.TILE_SIZE * item_information.x(), Room.TILE_SIZE * item_information.y());
-            ctx.setFill(Color.RED);
-            ctx.fillOval(padding, padding, radius, radius);
+                ctx.translate(Room.TILE_SIZE * moving.ix(), Room.TILE_SIZE * moving.iy());
+                ctx.setFill(Color.RED);
+                ctx.fillOval(padding, padding, radius, radius);
             ctx.restore();
         }
-    }
+    };
 }

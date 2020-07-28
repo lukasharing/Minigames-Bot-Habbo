@@ -83,13 +83,20 @@ public class Room {
         parent.getHash().intercept(HMessage.Direction.TOCLIENT, "RemoveFloorItem", this::remove_item);
     }
 
+
+    public void update(double delta) {
+
+        movings.update(delta);
+
+    };
+
     public void clear() {
         this.room_id = -1;
         this.players.clear();
         this.movings.clear();
         this.items.clear();
         this.room.clear();
-    }
+    };
 
     public FurniData getFurniData(int id_furni){ return parent.getFurniData(id_furni); };
 
